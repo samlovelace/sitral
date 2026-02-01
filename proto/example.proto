@@ -1,0 +1,7 @@
+syntax = "proto3";
+
+package sitral.example;
+
+message SimpleMessage {
+    string text = 1; 
+}
