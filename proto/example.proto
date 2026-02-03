@@ -1,6 +1,23 @@
 syntax = "proto3";
 
-package sitral.example;
+package sitral.registry;
+
+message RegistryRequest {
+  oneof msg {
+    RegisterPublisher register_publisher = 1;
+    QueryPublishers   query_publishers   = 2;
+  }
+}
+
+message RegisterPublisher {
+    string topic = 1; 
+    string type = 2; 
+    int32 port = 3; 
+}
+
+message QueryPublishers {
+    string topic = 1; 
+}
 
 message SimpleMessage {
     string text = 1; 

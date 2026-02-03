@@ -7,6 +7,7 @@
 #include <optional> 
 
 #include "PublisherInfo.hpp"
+#include "example.pb.h"
 
 class Registry 
 { 
@@ -21,6 +22,8 @@ public:
 
 private: 
     void handleClient(int aClientFd); 
+    void handleRegister(const sitral::registry::RegisterPublisher& aMsg); 
+    bool recvAll(int fd, void* data, size_t size);
 
 private:
    

@@ -41,16 +41,46 @@ void Registry::run()
 
 void Registry::handleClient(int aClientFd)
 {
-    char buf[1024]; 
-    ssize_t n = recv(aClientFd, buf, sizeof(buf), 0); 
+    std::cout << "handleClient connected\n";
 
-    if(n > 0)
-    {
-        // got data, process 
-        sitral::example::SimpleMessage msg;
-        msg.ParseFromArray(buf, n); 
-        std::cout << "Received: " << msg.text() << std::endl; 
+    while (true) {
+        uint32_t len_net;
+        if (!recvAll(aClientFd, &len_net, sizeof(len_net))) {
+            std::cout << "client disconnected\n";
+            break;
+        }
+
+        uint32_t len = ntohl(len_net);
+        std::vector<char> buf(len);
+
+        if (!recvAll(aClientFd, buf.data(), len)) {
+            std::cout << "client disconnected mid-message\n";
+            break;
+        }
+
+        sitral::registry::RegistryRequest msg;
+        if (!msg.ParseFromArray(buf.data(), len)) {
+            std::cerr << "failed to parse RegistryRequest\n";
+            continue;
+        }
+
+        switch (msg.msg_case()) {
+            case sitral::registry::RegistryRequest::kRegisterPublisher:
+                handleRegister(msg.register_publisher());
+                break;
+
+            default:
+                std::cerr << "unknown registry message\n";
+                break;
+        }
     }
+
+    close(aClientFd);
+}
+
+void Registry::handleRegister(const sitral::registry::RegisterPublisher& aMsg)
+{
+    std::cout << "handleRegister invoked for " << aMsg.topic() << "\n"; 
 }
 
 bool Registry::registerPublisher(const PublisherInfo& aPubInfo)
@@ -79,5 +109,20 @@ std::optional<std::vector<PublisherInfo>> Registry::queryPublishers(const std::s
     }
 
     return mRegistry.at(aTopicName); 
+}
+
+bool Registry::recvAll(int fd, void* data, size_t size)
+{
+    char* buf = static_cast<char*>(data);
+    size_t total = 0;
+
+    while (total < size) {
+        ssize_t n = recv(fd, buf + total, size - total, 0);
+        if (n <= 0) {
+            return false;
+        }
+        total += n;
+    }
+    return true;
 }
 
