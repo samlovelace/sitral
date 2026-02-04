@@ -2,10 +2,11 @@
 #define PUBLISHER_H
  
 #include <string> 
-#include <memory>
-#include <thread> 
+#include <memory> 
+#include <mutex> 
 
 #include "ClientSocket.h"
+#include "ServerSocket.h"
 
 class Publisher 
 { 
@@ -18,17 +19,15 @@ public:
 
 
 private: 
-    void clientAcceptLoop(); 
+    void handleClient(int aClientFd); 
 
 private:
 
     std::string mTopicName;
-    int mDataSocket;  
+    ServerSocket mDataSocket;  
     std::vector<int> mSubscribers; 
     std::unique_ptr<ClientSocket> mRegistryConnection; 
-    std::thread mClientAcceptThread;
-    
-    //std::mutex mSubsMutex; 
+    std::mutex mSubsMtx; 
     
 };
 #endif //PUBLISHER_H    

@@ -19,9 +19,22 @@ ServerSocket::ServerSocket(std::function<void(int)> aClientHandler, int aPort) :
     addr.sin_addr.s_addr = INADDR_ANY; // 0.0.0.0
     addr.sin_port = htons(aPort);
 
-    bind(mSocketFd, (sockaddr*)&addr, sizeof(addr));
-    listen(mSocketFd, 5);
+    if (bind(mSocketFd, (sockaddr*)&addr, sizeof(addr)) < 0) 
+    { 
+        perror("bind");
+        throw std::runtime_error("failed to bind server socket"); 
+    }
 
+    // Query the assigned port and IP 
+    socklen_t len = sizeof(addr); 
+    if (getsockname(mSocketFd, (sockaddr*)&addr, &len) == 0) 
+    { 
+        std::cout << "Bound to IP: " << inet_ntoa(addr.sin_addr) 
+                  << ", Port: " << ntohs(addr.sin_port) << "\n";
+        mPort = addr.sin_port; 
+    }
+
+    listen(mSocketFd, 5);
     mClientHandleThread = std::thread(&ServerSocket::clientHandleLoop, this); 
 }
 

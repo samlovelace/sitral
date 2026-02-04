@@ -2,15 +2,11 @@
 #include "Publisher.h"
 #include "example.pb.h"
 
-#include <cstdlib> 
 #include <arpa/inet.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <unistd.h>
 
-#include <cstring> 
-
-Publisher::Publisher(const std::string& aTopicName) : mTopicName(aTopicName)
+Publisher::Publisher(const std::string& aTopicName) : 
+    mTopicName(aTopicName), 
+    mDataSocket(std::bind(&Publisher::handleClient, this, std::placeholders::_1))
 {
 
 }
@@ -22,32 +18,6 @@ Publisher::~Publisher()
  
 bool Publisher::advertise()
 {   
-    mDataSocket = socket(AF_INET, SOCK_STREAM, 0);
-    if(mDataSocket < 0) {
-        perror("socket"); 
-    }
-
-    sockaddr_in addr{}; 
-    addr.sin_family = AF_INET; 
-    addr.sin_addr.s_addr = INADDR_ANY; // 0.0.0.0
-    addr.sin_port = htons(0); 
-
-    if (bind(mDataSocket, (sockaddr*)&addr, sizeof(addr)) < 0) 
-    { 
-        perror("bind"); return 1;
-    }
-
-    // Query the assigned port and IP 
-    socklen_t len = sizeof(addr); 
-    if (getsockname(mDataSocket, (sockaddr*)&addr, &len) == 0) 
-    { 
-        std::cout << "Bound to IP: " << inet_ntoa(addr.sin_addr) 
-                  << ", Port: " << ntohs(addr.sin_port) << "\n"; 
-    }
-
-    listen(mDataSocket, 5);
-    mClientAcceptThread = std::thread(&Publisher::clientAcceptLoop, this);  
-
     std::string registryAddr = std::getenv("REGISTRY_ADDR");  // ip:port 
     std::string serverIp = ""; 
     int serverPort = -1;
@@ -67,7 +37,7 @@ bool Publisher::advertise()
 
     registerPub->set_topic(mTopicName);
     registerPub->set_type("default");
-    registerPub->set_port(ntohs(addr.sin_port));
+    registerPub->set_port(ntohs(mDataSocket.getPort())); // tell the registry what port 
 
     // TODO: test msg.SerializeAsString();
     std::string serialized; 
@@ -79,11 +49,9 @@ bool Publisher::advertise()
     return true; 
 }
 
-void Publisher::clientAcceptLoop()
+void Publisher::handleClient(int aClientFd)
 {
-    // while(true)
-    // {
-    //     int sub_fd = accept(mDataSocket, nullptr, nullptr); 
-    //     mSubscribers.push_back(sub_fd); 
-    // }
+    // TODO: error checking to make sure one doesnt already exist? 
+    std::lock_guard<std::mutex> lock(mSubsMtx); 
+    mSubscribers.push_back(aClientFd); 
 }

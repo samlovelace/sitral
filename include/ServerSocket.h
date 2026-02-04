@@ -10,6 +10,8 @@ public:
     ServerSocket(std::function<void(int)> aClientHandler, int aPort = 0);
     ~ServerSocket();
 
+    uint16_t getPort() {return mPort; } 
+
 private: 
     void clientHandleLoop(); 
 
@@ -18,6 +20,7 @@ private:
     std::function<void(int)> mClientHandler; 
     int mSocketFd; 
     std::thread mClientHandleThread; 
+    uint16_t mPort; 
 
    
 };
