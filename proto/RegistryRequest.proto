@@ -18,7 +18,3 @@ message RegisterPublisher {
 message QueryPublishers {
     string topic = 1; 
 }
-
-message SimpleMessage {
-    string text = 1; 
-}

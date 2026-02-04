@@ -7,7 +7,7 @@ message(STATUS "Using Protobuf ${Protobuf_VERSION}")
 add_subdirectory(../../proto proto)
 
 set(SOURCES
-    ${CMAKE_CURRENT_LIST_DIR}/../../src/Publisher.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/../../src/BroadcastServer.cpp
     ${CMAKE_CURRENT_LIST_DIR}/../../src/ClientSocket.cpp
     ${CMAKE_CURRENT_LIST_DIR}/../../src/ServerSocket.cpp
     ${CMAKE_CURRENT_LIST_DIR}/../../src/Registry.cpp

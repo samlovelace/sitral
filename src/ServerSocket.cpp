@@ -43,6 +43,21 @@ ServerSocket::~ServerSocket()
 
 }
 
+bool ServerSocket::sendAll(int fd, const void* data, size_t size)
+{
+    const char* buf = static_cast<const char*>(data);
+    size_t totalSent = 0;
+
+    while (totalSent < size) {
+        ssize_t sent = send(fd, buf + totalSent, size - totalSent, 0);
+        if (sent <= 0) {
+            return false;  // client dead or error
+        }
+        totalSent += sent;
+    }
+    return true;
+}
+
 void ServerSocket::clientHandleLoop()
 {
     // keep alive 

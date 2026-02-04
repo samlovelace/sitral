@@ -11,9 +11,11 @@ public:
     ~ServerSocket();
 
     uint16_t getPort() {return mPort; } 
+    void sendMsg(const std::string& aSerializedString); 
 
-private: 
+protected: 
     void clientHandleLoop(); 
+    bool sendAll(int fd, const void* data, size_t size);
 
 private:
 

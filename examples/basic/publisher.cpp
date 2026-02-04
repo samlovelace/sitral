@@ -1,13 +1,21 @@
 
 #include "Publisher.h"
+#include "Test.pb.h"
 
 int main()
 {
-    Publisher p("testing"); 
+    Publisher<sitral::testing::Test> p("testing"); 
     p.advertise(); 
+
+    sitral::testing::Test msg; 
+    msg.set_words("Hello, World"); 
+
+    int idx = -1;
 
     while(true)
     {
-        
+        msg.set_number(idx++); 
+        p.publish(msg); 
+        sleep(250); 
     }
 }

@@ -1,0 +1,8 @@
+syntax = "proto3"; 
+
+package sitral.testing;
+
+message Test {
+    string words = 1; 
+    float number = 2; 
+}
