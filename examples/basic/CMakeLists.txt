@@ -6,19 +6,21 @@ message(STATUS "Using Protobuf ${Protobuf_VERSION}")
 
 add_subdirectory(../../proto proto)
 
-set(PUB_SOURCES
+set(SOURCES
     ${CMAKE_CURRENT_LIST_DIR}/../../src/Publisher.cpp
     ${CMAKE_CURRENT_LIST_DIR}/../../src/ClientSocket.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/../../src/ServerSocket.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/../../src/Registry.cpp
 )
 
 set(PROTO_SOURCES
     ${CMAKE_CURRENT_LIST_DIR}/../../proto/example.pb.cc
 )
 
-add_executable(registry registry.cpp ../../src/Registry.cpp)
+add_executable(registry registry.cpp ${SOURCES})
 target_include_directories(registry PRIVATE ../../include)
 target_link_libraries(registry PRIVATE sitral_proto)
 
-add_executable(publisher publisher.cpp ${PUB_SOURCES})
+add_executable(publisher publisher.cpp ${SOURCES})
 target_include_directories(publisher PRIVATE ../../include)
 target_link_libraries(publisher PRIVATE sitral_proto)

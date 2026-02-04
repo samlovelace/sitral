@@ -19,7 +19,7 @@ Publisher::~Publisher()
 {
 
 }
-
+ 
 bool Publisher::advertise()
 {   
     mDataSocket = socket(AF_INET, SOCK_STREAM, 0);
@@ -48,17 +48,6 @@ bool Publisher::advertise()
     listen(mDataSocket, 5);
     mClientAcceptThread = std::thread(&Publisher::clientAcceptLoop, this);  
 
-    sitral::registry::RegistryRequest msg;
-    auto* registerPub = msg.mutable_register_publisher();
-
-    registerPub->set_topic(mTopicName);
-    registerPub->set_type("default");
-    registerPub->set_port(ntohs(addr.sin_port));
-
-    // TODO: test msg.SerializeAsString();
-    std::string serialized; 
-    msg.SerializeToString(&serialized);
-
     std::string registryAddr = std::getenv("REGISTRY_ADDR");  // ip:port 
     std::string serverIp = ""; 
     int serverPort = -1;
@@ -73,15 +62,21 @@ bool Publisher::advertise()
     // connect to registry and register 
     mRegistryConnection = std::make_unique<ClientSocket>(serverIp, serverPort);
 
+    sitral::registry::RegistryRequest msg;
+    auto* registerPub = msg.mutable_register_publisher();
+
+    registerPub->set_topic(mTopicName);
+    registerPub->set_type("default");
+    registerPub->set_port(ntohs(addr.sin_port));
+
+    // TODO: test msg.SerializeAsString();
+    std::string serialized; 
+    msg.SerializeToString(&serialized);
+
     // send msg
     mRegistryConnection->sendMsg(serialized); 
     sleep(3); 
     return true; 
-}
-
-void Publisher::publish(const std::string& aMsg)
-{
-
 }
 
 void Publisher::clientAcceptLoop()

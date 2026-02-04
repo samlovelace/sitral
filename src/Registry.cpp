@@ -7,7 +7,7 @@
 #include "Registry.h"
 #include "example.pb.h"
 
-Registry::Registry()
+Registry::Registry() : mServer(std::bind(&Registry::handleClient, this, std::placeholders::_1), 5555)
 {
 
 }
@@ -18,24 +18,10 @@ Registry::~Registry()
 }
 
 void Registry::run()
-{
-    // setup socket 
-    int sock = socket(AF_INET, SOCK_STREAM, 0); 
-    if(sock < 0) perror("socket"); 
-
-    sockaddr_in addr{}; 
-    addr.sin_family = AF_INET; 
-    addr.sin_addr.s_addr = INADDR_ANY; // 0.0.0.0
-    addr.sin_port = htons(5555); 
-
-    bind(sock, (sockaddr*)&addr, sizeof(addr));
-    listen(sock, 5); 
-
-    // keep alive 
+{   
     while(true)
     {
-        int client = accept(sock, nullptr, nullptr); 
-        std::thread(&Registry::handleClient, this, client).detach(); 
+        std::this_thread::sleep_for(std::chrono::seconds(1)); 
     }
 }
 

@@ -5,8 +5,10 @@
 #include <unordered_map> 
 #include <vector> 
 #include <optional> 
+#include <memory>
 
 #include "PublisherInfo.hpp"
+#include "ServerSocket.h"
 #include "example.pb.h"
 
 class Registry 
@@ -27,6 +29,7 @@ private:
 
 private:
    
+    ServerSocket mServer; 
     std::unordered_map<std::string, std::vector<PublisherInfo>> mRegistry; 
 
 };

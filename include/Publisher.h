@@ -10,11 +10,11 @@
 class Publisher 
 { 
 public:
+    // TODO: static assertion to ensure compatible MsgT
+
     Publisher(const std::string& aTopicName);
     ~Publisher();
-
-    bool advertise();
-    void publish(const std::string& aMsg); 
+    bool advertise(); 
 
 
 private: 
@@ -26,7 +26,9 @@ private:
     int mDataSocket;  
     std::vector<int> mSubscribers; 
     std::unique_ptr<ClientSocket> mRegistryConnection; 
-    std::thread mClientAcceptThread; 
+    std::thread mClientAcceptThread;
+    
+    //std::mutex mSubsMutex; 
     
 };
 #endif //PUBLISHER_H    
