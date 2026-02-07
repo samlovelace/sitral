@@ -55,6 +55,9 @@ void Registry::handleClient(int aClientFd)
                 handleRegister(msg.register_publisher());
                 break;
 
+            case sitral::registry::RegistryRequest::kQueryPublishers:
+                handleQuery(aClientFd, msg.query_publishers()); 
+                break; 
             default:
                 std::cerr << "unknown registry message\n";
                 break;
@@ -67,6 +70,12 @@ void Registry::handleClient(int aClientFd)
 void Registry::handleRegister(const sitral::registry::RegisterPublisher& aMsg)
 {
     std::cout << "handleRegister invoked for " << aMsg.topic() << "\n"; 
+}
+
+void Registry::handleQuery(int fd, const sitral::registry::QueryPublishers& aQuery)
+{
+    std::cout << "handleQuery invoked for " << aQuery.topic() << "\n";
+    mServer.sendMsg(fd, "responding from the registry"); 
 }
 
 bool Registry::registerPublisher(const PublisherInfo& aPubInfo)

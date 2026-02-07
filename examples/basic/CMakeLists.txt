@@ -24,3 +24,7 @@ target_link_libraries(registry PRIVATE sitral_proto)
 add_executable(publisher publisher.cpp ${SOURCES})
 target_include_directories(publisher PRIVATE ../../include)
 target_link_libraries(publisher PRIVATE sitral_proto)
+
+add_executable(subscriber subscriber.cpp ${SOURCES})
+target_include_directories(subscriber PRIVATE ../../include)
+target_link_libraries(subscriber PRIVATE sitral_proto)

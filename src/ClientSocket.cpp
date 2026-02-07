@@ -35,9 +35,21 @@ ClientSocket::ClientSocket(const std::string& aServerIp, int aServerPort)
 
 ClientSocket::~ClientSocket()
 {
+    mRunning = false;
     if (mSocketFd >= 0) {
+        shutdown(mSocketFd, SHUT_RDWR);
         close(mSocketFd);
     }
+    if (mRecvThread.joinable()) {
+        mRecvThread.join();
+    }
+}
+
+void ClientSocket::setReceiveCallback(RawCallback cb)
+{
+    mCallback = std::move(cb);
+    mRunning = true;
+    mRecvThread = std::thread(&ClientSocket::recvLoop, this);
 }
 
 bool ClientSocket::sendAll(const void* data, size_t size)
@@ -69,3 +81,47 @@ bool ClientSocket::sendMsg(const std::string& msg)
 
     return true;
 }
+
+bool ClientSocket::recvAll(void* data, size_t size)
+{
+    char* buf = static_cast<char*>(data);
+    size_t total = 0;
+
+    while (total < size) {
+        ssize_t n = recv(mSocketFd, buf + total, size - total, 0);
+        if (n <= 0) {
+            return false;
+        }
+        total += n;
+    }
+    return true;
+}
+
+void ClientSocket::recvLoop()
+{
+    while (mRunning) 
+    {
+        uint32_t len_net;
+        if (!recvAll(&len_net, sizeof(len_net))) 
+        {
+            break;
+        }
+
+        uint32_t len = ntohl(len_net);
+        std::string payload(len, '\0');
+
+        if (!recvAll(payload.data(), len)) 
+        {
+            break;
+        }
+
+        if (mCallback) 
+        {
+            mCallback(payload);  // raw bytes
+        }
+    }
+
+    mRunning = false;
+}
+
+

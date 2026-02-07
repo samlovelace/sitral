@@ -18,3 +18,13 @@ message RegisterPublisher {
 message QueryPublishers {
     string topic = 1; 
 }
+
+message PublisherInfo {
+  string ip   = 1;
+  uint32 port = 2;
+  string type = 3;
+}
+
+message QueryPublishersResponse {
+  repeated PublisherInfo publishers = 1;
+}

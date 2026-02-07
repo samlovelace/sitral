@@ -58,6 +58,18 @@ bool ServerSocket::sendAll(int fd, const void* data, size_t size)
     return true;
 }
 
+bool ServerSocket::sendMsg(int fd, const std::string& msg)
+{
+    if (mSocketFd < 0) return false;
+
+    uint32_t len = htonl(static_cast<uint32_t>(msg.size()));
+
+    if (!sendAll(fd, &len, sizeof(len))) return false;
+    if (!sendAll(fd, msg.data(), msg.size())) return false;
+
+    return true;
+}
+
 void ServerSocket::clientHandleLoop()
 {
     // keep alive 
