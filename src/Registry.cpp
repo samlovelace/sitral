@@ -2,10 +2,10 @@
 #include <thread>
 #include <sys/socket.h>
 #include <netinet/in.h>
+#include <arpa/inet.h>
 #include <iostream>
 
 #include "Registry.h"
-#include "example.pb.h"
 
 Registry::Registry() : mServer(std::bind(&Registry::handleClient, this, std::placeholders::_1), 5555)
 {
@@ -52,7 +52,7 @@ void Registry::handleClient(int aClientFd)
 
         switch (msg.msg_case()) {
             case sitral::registry::RegistryRequest::kRegisterPublisher:
-                handleRegister(msg.register_publisher());
+                handleRegister(aClientFd, msg.register_publisher());
                 break;
 
             case sitral::registry::RegistryRequest::kQueryPublishers:
@@ -67,20 +67,50 @@ void Registry::handleClient(int aClientFd)
     close(aClientFd);
 }
 
-void Registry::handleRegister(const sitral::registry::RegisterPublisher& aMsg)
+void Registry::handleRegister(int fd,
+                              const sitral::registry::RegisterPublisher& msg)
 {
-    std::cout << "handleRegister invoked for " << aMsg.topic() << "\n"; 
+    std::cout << "handleRegister invoked for topic: " << msg.topic() << "\n"; 
+    sockaddr_in peer{};
+    socklen_t len = sizeof(peer);
+
+    getpeername(fd, (sockaddr*)&peer, &len);
+
+    PublisherInfo info;
+    info.topic = msg.topic();
+    info.type  = msg.type();
+    info.ip    = inet_ntoa(peer.sin_addr);
+    info.port  = msg.port();
+
+    // TODO: check if register failed/succeeded, response to client with status 
+    registerPublisher(info);
 }
 
 void Registry::handleQuery(int fd, const sitral::registry::QueryPublishers& aQuery)
 {
     std::cout << "handleQuery invoked for " << aQuery.topic() << "\n";
-    mServer.sendMsg(fd, "responding from the registry"); 
+    sitral::registry::RegistryResponse resp;
+    auto* reply = resp.mutable_query_publishers_response();
+
+    auto publishers = queryPublishers(aQuery.topic());
+    if (publishers) {
+        for (const auto& p : *publishers) {
+            auto* info = reply->add_publishers();
+            info->set_ip(p.ip);
+            info->set_port(p.port);
+            info->set_type(p.type);
+        }
+    }
+
+    std::string serialized; 
+    resp.SerializeToString(&serialized); 
+
+    mServer.sendMsg(fd, serialized); 
 }
 
 bool Registry::registerPublisher(const PublisherInfo& aPubInfo)
 { 
-    std::vector<PublisherInfo> pubs = mRegistry[aPubInfo.topic]; 
+    std::vector<PublisherInfo>& pubs = mRegistry[aPubInfo.topic]; 
 
     for(const auto& pub : mRegistry.at(aPubInfo.topic))
     {
@@ -92,7 +122,8 @@ bool Registry::registerPublisher(const PublisherInfo& aPubInfo)
     }
 
     // add to registry if you get here 
-    pubs.push_back(aPubInfo); 
+    pubs.push_back(aPubInfo);
+    std::cout << "Publisher registered for topic: " << aPubInfo.topic << "\n";  
     return true; 
 }
 

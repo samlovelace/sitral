@@ -9,7 +9,8 @@
 
 #include "PublisherInfo.hpp"
 #include "ServerSocket.h"
-#include "example.pb.h"
+
+#include "RegistryRequest.pb.h"
 
 class Registry 
 { 
@@ -24,7 +25,7 @@ public:
 
 private: 
     void handleClient(int aClientFd); 
-    void handleRegister(const sitral::registry::RegisterPublisher& aMsg); 
+    void handleRegister(int fd, const sitral::registry::RegisterPublisher& aMsg); 
     void handleQuery(int fd, const sitral::registry::QueryPublishers& aQuery);
     bool recvAll(int fd, void* data, size_t size);
 

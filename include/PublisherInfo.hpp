@@ -7,13 +7,15 @@ struct PublisherInfo
 {
     std::string topic; 
     std::string type; 
-    std::string address; // ip:port  
+    std::string ip;
+    uint16_t port;   
 
     bool operator==(const PublisherInfo& other) const
     {
         return topic == other.topic && 
                type == other.type && 
-               address == other.address; 
+               ip == other.ip && 
+               port == other.port;  
     }
 };
 #endif 

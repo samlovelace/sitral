@@ -25,6 +25,12 @@ message PublisherInfo {
   string type = 3;
 }
 
+message RegistryResponse {
+  oneof msg {
+    QueryPublishersResponse query_publishers_response = 1; 
+  }
+}
+
 message QueryPublishersResponse {
   repeated PublisherInfo publishers = 1;
 }

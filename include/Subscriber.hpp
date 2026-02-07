@@ -57,10 +57,30 @@ private:
         return {serverIp, serverPort}; 
     }
 
-    // TODO: eventually this function should 
+    // TODO: eventually this function should handle or dispatch for any generic response from the registry 
     void registryCallback(const std::string& aMsg)
     {
-        std::cout << "Recvd: " << aMsg << std::endl;  
+        std::cout << "Recvd response from registry\n";
+
+        sitral::registry::RegistryResponse resp;
+        if (!resp.ParseFromString(aMsg)) {
+            std::cerr << "Failed to parse RegistryResponse\n";
+            return;
+        }
+
+        if (resp.msg_case() !=
+            sitral::registry::RegistryResponse::kQueryPublishersResponse) {
+            std::cerr << "RegistryResponse is not QueryPublishersResponse\n";
+            return;
+        }
+
+        const auto& pubs =
+            resp.query_publishers_response().publishers();
+
+        for (const auto& p : pubs) {
+            std::cout << "Ip: " << p.ip()
+                    << " Port: " << p.port() << "\n";
+        }
     }
 
 private:
