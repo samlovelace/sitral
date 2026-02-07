@@ -31,7 +31,7 @@ ServerSocket::ServerSocket(std::function<void(int)> aClientHandler, int aPort) :
     { 
         std::cout << "Bound to IP: " << inet_ntoa(addr.sin_addr) 
                   << ", Port: " << ntohs(addr.sin_port) << "\n";
-        mPort = addr.sin_port; 
+        mPort = ntohs(addr.sin_port); 
     }
 
     listen(mSocketFd, 5);

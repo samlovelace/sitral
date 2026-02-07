@@ -5,7 +5,7 @@
 
 void callback(const sitral::testing::Test& aMsg)
 {
-    //std::cout << "Recvd: " << aMsg << "\n"; 
+    std::cout << "Recvd: " << aMsg.words() << " " << aMsg.number() << "\n"; 
 }
 
 int main()

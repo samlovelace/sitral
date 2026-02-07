@@ -81,6 +81,28 @@ private:
             std::cout << "Ip: " << p.ip()
                     << " Port: " << p.port() << "\n";
         }
+
+        // connect to a publisher 
+        auto pub = pubs.at(0);
+        
+        mDataConnection = std::make_unique<ClientSocket>(pub.ip(), pub.port()); 
+        mDataConnection->setReceiveCallback(std::bind(&Subscriber::subscriptionCallback, this, std::placeholders::_1));
+    }
+
+    void subscriptionCallback(const std::string& aMsg)
+    {
+        std::cout << "subscription callback\n"; 
+
+        MsgT msg; 
+        if (!msg.ParseFromString(aMsg)) {
+            std::cerr << "Failed to parse...\n";
+            return;
+        }
+
+        if(mCallback)
+        {
+            mCallback(msg); 
+        }
     }
 
 private:

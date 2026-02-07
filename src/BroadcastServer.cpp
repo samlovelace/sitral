@@ -2,6 +2,7 @@
 #include "BroadcastServer.h"
 #include <arpa/inet.h>
 #include <unistd.h>
+#include <iostream>
 
 BroadcastServer::BroadcastServer() : ServerSocket(std::bind(&BroadcastServer::handleClient, this, std::placeholders::_1))
 {
@@ -15,8 +16,10 @@ BroadcastServer::~BroadcastServer()
 
 void BroadcastServer::handleClient(int aClientFd)
 {
+    std::cout << "Broadcast server handle client\n";
     std::lock_guard<std::mutex> lock(mClientsMtx); 
     mClients.push_back(aClientFd); 
+    std::cout << "Clients size: " << mClients.size(); 
 }
 
 void BroadcastServer::broadcast(const std::string& payload)
