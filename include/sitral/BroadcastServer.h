@@ -4,7 +4,9 @@
 #include <mutex>
 #include "ServerSocket.h"
 
- 
+namespace sitral
+{
+
 class BroadcastServer : public ServerSocket
 { 
 public:
@@ -22,4 +24,6 @@ private:
     std::vector<int> mClients; 
    
 };
+
+} // namespace sitral
 #endif //BROADCASTSERVER_H

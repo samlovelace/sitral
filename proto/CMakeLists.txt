@@ -3,14 +3,13 @@ find_package(Protobuf REQUIRED)
 
 set(PROTO_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/RegistryRequest.proto
-    ${CMAKE_CURRENT_SOURCE_DIR}/Test.proto
 )
 
 protobuf_generate_cpp(PROTO_SRCS PROTO_HDRS
     ${PROTO_FILES}
 )
 
-add_library(sitral_proto
+add_library(sitral_proto OBJECT
     ${PROTO_SRCS}
     ${PROTO_HDRS}
 )

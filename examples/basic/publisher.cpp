@@ -1,10 +1,11 @@
 
-#include "Publisher.h"
+#include "sitral/Publisher.hpp"
 #include "Test.pb.h"
+#include <thread> 
 
 int main()
 {
-    Publisher<sitral::testing::Test> p("testing"); 
+    sitral::Publisher<sitral::testing::Test> p("testing"); 
     p.advertise(); 
 
     sitral::testing::Test msg; 

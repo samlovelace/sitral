@@ -5,7 +5,7 @@
 #include <arpa/inet.h>
 #include <iostream>
 
-#include "Registry.h"
+#include "sitral/Registry.h"
 
 Registry::Registry() : mServer(std::bind(&Registry::handleClient, this, std::placeholders::_1), 5555)
 {

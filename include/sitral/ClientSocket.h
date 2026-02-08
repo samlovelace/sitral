@@ -6,6 +6,9 @@
 #include <atomic> 
 #include <thread> 
 #include <functional>
+
+namespace sitral
+{
  
 class ClientSocket 
 {
@@ -30,4 +33,6 @@ private:
     RawCallback mCallback;
     std::atomic<bool> mRunning{false};
 };
+
+} // namespace sitral
 #endif //CLIENTSOCKET_H 

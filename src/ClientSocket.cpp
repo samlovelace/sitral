@@ -1,4 +1,4 @@
-#include "ClientSocket.h"
+#include "sitral/ClientSocket.h"
 
 #include <arpa/inet.h>
 #include <sys/socket.h>
@@ -6,6 +6,9 @@
 #include <cstring>
 #include <cerrno>
 #include <iostream>
+
+namespace sitral
+{
 
 ClientSocket::ClientSocket(const std::string& aServerIp, int aServerPort)
 {
@@ -124,4 +127,4 @@ void ClientSocket::recvLoop()
     mRunning = false;
 }
 
-
+} // namespace sitral

@@ -3,8 +3,8 @@
  
 #include <memory> 
 
-#include "ClientSocket.h"
-#include "RegistryRequest.pb.h"
+#include "sitral/ClientSocket.h"
+#include "proto/RegistryRequest.pb.h"
  
 template<typename MsgT> 
 class Subscriber 

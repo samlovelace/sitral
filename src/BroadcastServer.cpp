@@ -1,8 +1,11 @@
 
-#include "BroadcastServer.h"
+#include "sitral/BroadcastServer.h"
 #include <arpa/inet.h>
 #include <unistd.h>
 #include <iostream>
+
+namespace sitral
+{
 
 BroadcastServer::BroadcastServer() : ServerSocket(std::bind(&BroadcastServer::handleClient, this, std::placeholders::_1))
 {
@@ -48,4 +51,4 @@ void BroadcastServer::broadcast(const std::string& payload)
         }
     }
 }
-
+} // namespace sitral

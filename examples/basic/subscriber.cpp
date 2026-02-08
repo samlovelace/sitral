@@ -1,5 +1,6 @@
 
-#include "Subscriber.hpp"
+#include "sitral/Subscriber.hpp"
+
 #include "Test.pb.h"
 #include <iostream> 
 
@@ -11,7 +12,7 @@ void callback(const sitral::testing::Test& aMsg)
 int main()
 {
     std::string topicName = "testing"; 
-    Subscriber<sitral::testing::Test> s(topicName, callback); 
+    sitral::Subscriber<sitral::testing::Test> s(topicName, callback); 
 
     while(true)
     {
