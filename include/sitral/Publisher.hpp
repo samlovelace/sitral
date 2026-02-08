@@ -4,9 +4,9 @@
 #include <type_traits>
 #include <google/protobuf/message.h>
 
-#include "ClientSocket.h"
-#include "BroadcastServer.h"
-#include "RegistryRequest.pb.h"
+#include "sitral/ClientSocket.h"
+#include "sitral/BroadcastServer.h"
+#include "proto/RegistryRequest.pb.h"
 
 namespace sitral {
 

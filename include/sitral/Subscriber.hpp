@@ -6,6 +6,8 @@
 #include "sitral/ClientSocket.h"
 #include "proto/RegistryRequest.pb.h"
  
+namespace sitral
+{
 template<typename MsgT> 
 class Subscriber 
 { 
@@ -113,4 +115,7 @@ private:
     Callback mCallback; 
    
 };
+    
+} // namespace sitral
+
 #endif //SUBSCRIBER_HPP
